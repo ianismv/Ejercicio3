@@ -4,287 +4,224 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp1
+namespace SuperWeatherForescast
 {
+    using Microsoft.Win32;
     using System;
     using System.Collections;
+    using System.Diagnostics;
+    using System.Reflection.Emit;
+    using System.Runtime.ConstrainedExecution;
     using System.Security.Cryptography;
 
-    //Este ejercicio obligatorio me presento muchos desafíos. Tuve que aprender a amañarme como pude, probando muchas ejecuciones hasta que salgan los resultados que esperé.
-    //La conclusión que me llevo con este ejercicio es que, por más que no entendamos una lógica desde 0 o tengamos resultados no esperados,
-    //podemos utilizar todas las herramientas aprendidas hasta el momento para probar nuevos métodos o formas de hacer las cosas. 
-    //Al probar varias ejecuciones y distintas formas de hacer las cosas para que termine funcionando mi código, terminé aprendiendo la lógica que no entendía en un principio,
-    //y así poder reutilizar los conocimientos para los demás metodos.
-    //Entiendo que todavía me queda mucho por aprender, pero me quedo con el hecho de que pude obtener los resultados que esperé.
+    //Soy consciente de que en los dos ejercicios anteriores logre un resultado óptimo y eficaz, teniendo todos los resultados esperados 
+    //con todas las validaciones correspondientes para que los programas no admitan ningún error / resultado inesperado. En este ejercicio
+    //me di cuenta que todavía tengo mucho que aprender. Pude lograr que el programa funcione, pero también soy consciente que podría
+    //estar mejor estructurado, con una lógica no tan compleja, y una utilización mas eficiente de los modificadores de acceso.
+    //Lo que si destaco es que en cada ejercicio aprendo muchisimo, es un camino largo que estoy transitandolo con muchas ganas!
 
-    //Cosas que aprendí:
-    //El manejo de métodos y funciones, logro que mi Main sea muchísimo mas corto.
-    //La iteración del Menu como yo queria me costo bastante, hasta que se me ocurrio que, dadas ciertas condiciones, podria llamar al mismo metodo para que se ejecute de nuevo(Dentro del mismo procedimiento).
-    //Al principio, usaba procedimientos sin parámetros. Luego entendí que todo el ejercicio tenía que trabajar bajo los mismos calendarios. Los metodos funcionaban igual, pero con distintos valores.
-    //Tener estas complicaciones me ayudo a entender los parametros por referencia, la declaración de variables tanto del global como de cada procedimiento/función.
-    //Hay algunos recorridos de matriz que me costaron mucho. Descubrí que para algunos necesitaban mas de un parametro, ya que todo el codigo trabaja con mas de un calendario(Calendario de días y Calendario de temperaturas).
-    //Aunque descubrí esto por mi cuenta, la lógica de recorridos me sigue costando un poco, tuve que investigar externamente para lograrlo y probrar MUCHAS formas de recorrer y trabajar sobre el recorrido.
-    //El recorrido de dias posteriores fue de lo que mas me costó entender. Todavía no entiendo mucho la lógica jaja pero lo importante es que pude lograr los resultados que esperaba.
-    
-    
-    //Crear una aplicación simple de consola para el siguiente escenario:
+    //    //    Escenario: Weather Forecast Súper Mejorado(para una Estación Meteorológica)
 
-    //Escenario: Weather Forecast Mejorado(para una Estación Meteorológica)
+    //    Utilizando el escenario del ejercicio anterior como base, deberás ahora reutilizar y reformar el código lo más que puedas para utilizar clases! 
+    //Para ello deberás cumplir con las siguientes observaciones:
 
-    //Una estación meteorológica necesita gestionar y procesar datos de temperatura del interior de la cabina para un mes completo (31 días). Los datos deben registrarse en una colección tipo matriz, donde las filas representan las semanas, y las columnas los días. Se requiere implementar varias funcionalidades para gestionar y procesar estos datos.
+    //Observaciones:
+    //En principio, todas las funciones de tu algoritmo deben ser métodos de clases.Puede que tengas que definir varias clases diferentes para funcionalidades diferentes, pero no deben quedar funciones sueltas. Puede que no utilices todas las funciones o código que hayas definido en tu escenario anterior, como el menú, por ej.
+    //Deberás definir las clases que sean necesarias, con campos, propiedades, métodos, y modificadores de acceso que creas conveniente.
+    //No es necesario que el proyecto sea de tipo consola, puedes usar si quieres una librería de clases, con todas las clases y funcionalidades necesarias para que yo lo implemente en otro proyecto, de ser necesario. (No es necesario el menú!).
+    //Puedes definir más clases si así lo prefieres, no necesariamente deben estar sólo las clases que se piden en los requerimientos.Lo mismo con las propiedades y los métodos.Puedes definir más si así lo prefieres.
+    //Deberás compartir todo en un repositorio! No más archivos ni texto para subir!
+    //Bien, ahora vamos con los requerimientos (algunos nuevos!):
 
-    //Para este ejercicio, se deben utilizar:
-    //Una  5 x 7 para almacenar las temperaturas diarias del mes.
-    //Una  para almacenar las temperaturas promedio de cada semana.
-    //Una  para almacenar las temperaturas por encima de un cierto umbral.
     //Requerimientos:
-    //Implementar un algoritmo principal que permita la carga inicial de todas las temperaturas del mes, 31 días (Puedes pedirle al usuario que cargue día por día, o bien simular la carga total de temperaturas). No importa si sobran lugares en la matriz al final, sólo deberemos usar 31 lugares.
-    //Luego mostrar al usuario un menú con las opciones (Ver siguiente). El usuario elije una opción y luego se le da la opción de elegir si quiere otra opción o salir, y así sucesivamente hasta que elija salir.
-    //Opción para ver temperatura de un día específico: Aquí vamos a usar lo del escenario anterior pero cambiándole el mensaje. Basándose en la temperatura del día elegido, la aplicación debería mostrar la temperatura y un mensaje:
-    // Si la temperatura es inferior a 0, mostrar "Hizo mucho frío."
-
-    // Si la temperatura está entre 0 y 20, mostrar "El clima estaba fresco."
-
-    // Si la temperatura es superior a 20, mostrar "Hizo calor afuera."
-    //Opción para calcular y ver temperaturas promedios de cada semana. Aquí debes usar otra colección para el almacenamiento.
-    //Opción para encontrar y ver temperaturas por encima de 20° (Umbral). Aquí también debes usar otra colección para el almacenamiento.
-    //Opción para ver la temperatura promedio del mes. Aquí puedes usar la matriz principal o la colección de promedios de cada semana.
-    //Opción para ver la temperatura más alta. Aquí debes usar la matriz principal.
-    //Opción para ver la temperatura más baja. Aquí debes usar la matriz principal.
-    //Opción para ver el pronóstico de 5 días posteriores al mes. Aquí también debes implementar lo del ejercicio anterior, sólo que puedes mejorar el código colocando la funcionalidad en una opción aparte.
-    //Opción para Salir.
-    //Implementar una función para añadir las temperaturas diarias.
-    //Implementar una función para calcular las temperaturas promedio de cada semana y almacenarlas en una colección.
-    //Implementar una función para encontrar las temperaturas por encima de un umbral (20°) y almacenarlas en una colección.
-    //Implementar una función para calcular la temperatura promedio del mes.
-    //Implementar una función para encontrar la temperatura más alta y la más baja.
-    //Utilizar una matriz 5x7 para almacenar las temperaturas diarias del mes.
-    //Utilizar una colección adecuada para almacenar las temperaturas promedio de cada semana.
-    //Utilizar una colección que creas más conveniente para almacenar las temperaturas por encima de un cierto umbral.
+    //Se necesita saber ahora quién registró las temperaturas en qué día, sabiendo que en la estación está una persona presente en todo momento, pero esa persona puede ser un Profesional o bien un Pasante.No tienen mucha diferencias salvo que el pasante tiene un Número de Legajo, y el profesional tiene un Número de Matrícula que lo habilita.En total debería haber 3 pasantes y 3 profesionales, cubriendo turnos de 8 horas, y siempre intercalando Pasante-Profesional.Define las clases que creas necesario con sus respectivas properties. No es necesario que tenga métodos.
+    //Deberás definir una clase llamada RegistroTemperatura, que contendrá la información de un registro de temperatura.Esta clase será usada ahora en la matriz. Estas podrían ser algunas properties:
+    //-- Temperatura registrada
+    //-- Persona de Turno
+    //-- Fecha de registro
+    //-- Hora de registro
+    //Las colecciones deben ir en una clase llamada EstacionMeteorologica, con los siguientes métodos:
+    //-- Un método llamado RegistrarTemperatura, que recibirá un objeto de tipo RegistroDemperatura, para ser almacenado en la matriz.
+    //-- Un método VerTemperaturas, con parámetro para elegir qué colección ver.Este método puede devolver sólo las temperaturas.
+    //-- Utiliza el constructor para la carga inicial de la matriz, si usaste carga automática.
+    //-- Utiliza un método de carga para la matriz, si le pediste al usuario que cargue manualmente.
+    //-- Puedes agregar algunas funciones anteriores como métodos de esta clase, como por ejemplo "Ver temperatura de un día específico". Tu eliges las que creas conveniente que pueden ir en esta clase.
+    //-- Recuerda que ahora la matriz ya no es de tipo int, sino que almacena objetos de la clase nueva Registro! Modificalo!
+    //Algunas funciones de cálculo de tu programa pueden ir en una clase estática, de nombre CalculoTemperaturas.Añade las funciones que creas convenientes que están relacionadas a algún tipo de cálculo del programa, como por ejemplo,
+    //CalcularTemperaturaPromedio o similares.Solo recuerda que estos métodos harán cálculo sobre algún parámetro que reciban de tipo de la colección seguramente. Puedes hacer uso de esta clase en EstaciónMeteorológica si así lo deseas, o bien dejarme a mi que la utilice 
+    //    si se te complica relacionarlas.Recuerda que esta clase será estática y la de estación no.
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            Console.WriteLine("¡Bienvenido al segundo ejercicio obligatorio del Bootcamp 3.0 de Devlights!");
+            // Inicializa la estación meteorológica con una matriz de 5x7.
+            EstacionMeteorologica estacion = new EstacionMeteorologica();
+            Console.WriteLine("Calendario de temperaturas:");
+            estacion.MostrarCalendario();
+            // Mostrar todas las temperaturas registradas
+            Console.WriteLine("Todas las temperaturas registradas:");
+            estacion.VerTemperaturas();
             Console.WriteLine();
-            Console.WriteLine("WEATHER FORECAST MEJORADO (PARA UNA ESTACIÓN METEREOLÓGICA)");
-            Console.WriteLine("------------------------------------------------------");
-            //Inicio el calendario que, tal como se pidió, comprenda las 5 semanas con sus respectivos 7 días, teniendo en cuenta la fecha actual.
-            int[,] calendario = IniciarCalendario();
-            double[,] calentemp = new double[5, 7];
-            MostrarCalendario(calendario);
-            int opcion = 0;
-            do
-            {
-                Console.WriteLine();
-                Console.WriteLine("Para poder utilizar nuestras funcionalidades, se solicita la carga inicial de todas las temperaturas del mes.");
-                Console.WriteLine("1) Cargar manualmente, día por día.");
-                Console.WriteLine("2) Iniciar simulación de temperaturas.");
-                Console.WriteLine();
-                Console.WriteLine("Por favor, ingrese el VALOR NUMÉRICO que represente la OPCIÓN que desee seleccionar (1/2)");
-                if (int.TryParse(Console.ReadLine(), out opcion))
-                {
-                    switch (opcion)
-                    {
-                        case 1:
-                            calentemp = CargarTemperaturasManualmente(calentemp);
-                            break;
-                        case 2:
-                            calentemp = SimularTemperaturas();
-                            break;
-                        default:
-                            Console.WriteLine($"el número ingresado {opcion} es incorrecto. Inserte un valor numérico (1 o 2).");
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Valor incorrecto. El programa volverá a ejecutarse. Inserte un valor numérico.");
-                }
-            }
-            while (opcion != 1 && opcion != 2);
-            Opciones(calendario, calentemp);
+            // Ver la temperatura de un día específico (por ejemplo, en la semana 2)
+            Console.WriteLine("Temperaturas registradas en la semana 3, dia 2:");
+            estacion.VerTemperaturaDiaEspecifico(2, 1);
+            Console.WriteLine();
+            // Calcular la temperatura promedio usando la clase CalculoTemperaturas
+            double promedio = CalculoTemperaturas.CalcularPromedio(estacion.ObtenerRegistros());
+            Console.WriteLine($"La temperatura promedio es: {promedio}");
+
+            // Calcular la temperatura máxima usando la clase CalculoTemperaturas
+            double maxima = CalculoTemperaturas.CalcularMaxima(estacion.ObtenerRegistros());
+            Console.WriteLine($"La temperatura máxima registrada es: {maxima}");
         }
+    }
+    public abstract class Persona
+    {
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public string Tipo { get; set; }
 
-        // Inicializa el calendario para el mes actual con los días del mes, incluyendo días anteriores y posteriores.
-        static int[,] IniciarCalendario()
+        protected Persona(string nombre, string apellido, string tipo)
         {
-            //Inicio la fecha de hoy, el primer dia del mes actual con respecto a la fecha de hoy, y que día de la semana es ese primer día del mes.
-            DateTime hoy = DateTime.Now;
-            DateTime primerDiaMes = new DateTime(hoy.Year, hoy.Month, 1);
-            int diaSemanaPrimerDia = (int)primerDiaMes.DayOfWeek;
-
-            //La matriz, al tener un formato de 5x7, tendrá días anteriores y posteriores al mes actual.
-            //Para poder inicializar la matriz de manera óptima, establezco la cantidad de días anteriores, posteriores, siendo el dia inicial la variable que me permite saber en que día estoy.
-            int dia = 1;
-            int diasMesAnterior = (primerDiaMes - TimeSpan.FromDays(1)).Day;
-            int diasMesActual = DateTime.DaysInMonth(hoy.Year, hoy.Month);
-            int diaInicial = diasMesAnterior - diaSemanaPrimerDia + 1;
-
-            //Creo una instancia de calendario para esta funcionalidad.
-            int[,] calendario = new int[5, 7];
-
-            //Recorro la matriz con dos For ya que tiene 2 dimensiones. Según el dia de la semana en el que estoy, se evalua si es parte del mes anterior, el mes actual o el mes siguiente.
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (semana == 0 && diaSemana < diaSemanaPrimerDia)
-                    {
-                        // Días del mes anterior
-                        calendario[semana, diaSemana] = diaInicial++;
-                    }
-                    else if (dia <= diasMesActual)
-                    {
-                        // Días del mes actual
-                        calendario[semana, diaSemana] = dia++;
-                    }
-                    else
-                    {
-                        // Días del mes siguiente
-                        calendario[semana, diaSemana] = dia++ - diasMesActual;
-                    }
-                }
-            }
-            return calendario;
+            Nombre = nombre;
+            Apellido = apellido;
+            Tipo = tipo;
         }
-
-        // Imprime el calendario con los días del mes, incluyendo días del mes anterior y posterior.
-        static void MostrarCalendario(int[,] calendario)
+    }
+    public class Profesional : Persona
+    {
+        public int Matricula { get; set; }
+        public Profesional(int matricula, string nombre, string apellido) : base(nombre, apellido, "Profesional")
         {
-            // Se imprimen los días de la semana.
-            Console.WriteLine("MATRIZ DEL MES ACTUAL");
-            Console.WriteLine();
-            string[] diasSemana = { "DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB" };
-            foreach (string diaSemana in diasSemana)
-            {
-                Console.Write(diaSemana + "\t");
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-
-            // Se imprimen cada día del mes.
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (calendario[semana, diaSemana] == 0)
-                    {
-                        // Imprime espacios para días del mes anterior o posterior
-                        Console.Write("\t");
-                    }
-                    else
-                    {
-                        // Imprime el día del mes
-                        Console.Write(calendario[semana, diaSemana] + "\t");
-                    }
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine("------------------------------------------------------");
+            Matricula = matricula;
         }
-
-        // Permite al usuario ingresar manualmente las temperaturas para cada día del mes.
-        static double[,] CargarTemperaturasManualmente(double[,] calentemp)
+    }
+    public class Pasante : Persona
+    {
+        public int Legajo { get; set; }
+        public Pasante(int legajo, string nombre, string apellido) : base(nombre, apellido, "Pasante")
         {
-            //Inicio la fecha de hoy, el primer dia del mes actual con respecto a la fecha de hoy, y que día de la semana es ese primer día del mes.
-            DateTime hoy = DateTime.Now;
-            DateTime primerDiaMes = new DateTime(hoy.Year, hoy.Month, 1);
-            int diaSemanaPrimerDia = (int)primerDiaMes.DayOfWeek;
-            //La matriz, al tener un formato de 5x7, tendrá todas las temperaturas de cada día del mes, y un espacio vacío en los días que esten fuera del mes actual.
-            int dia = 1;
-            int diasMesActual = DateTime.DaysInMonth(hoy.Year, hoy.Month);
-            //Creo una instancia de calendario de temperaturas.
-            calentemp = new double[5, 7];
-            //Recorro la matriz con dos For ya que tiene 2 dimensiones. Según el dia de la semana en el que estoy, se evalua si es parte del mes anterior, el mes actual o el mes siguiente. Si es parte del mes, se establece temperatura.
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (semana == 0 && diaSemana < diaSemanaPrimerDia)
-                    {
-                        // Días del mes anterior
-                        calentemp[semana, diaSemana] = double.NaN;
-                    }
-                    else if (dia <= diasMesActual)
-                    {
-                        // Pedir temperatura para el día actual con validación
-                        double temperatura;
-                        bool esValido;
-                        do
-                        {
-                            Console.Write($"Ingrese la temperatura para el día {dia}: ");
-                            esValido = double.TryParse(Console.ReadLine(), out temperatura);
-                            if (!esValido)
-                            {
-                                Console.WriteLine("Entrada inválida. Por favor, ingrese un número válido.");
-                            }
-                        } while (!esValido);
-                        calentemp[semana, diaSemana] = temperatura;
-                        dia++;
-                    }
-                    else
-                    {
-                        // Días del mes siguiente
-                        calentemp[semana, diaSemana] = double.NaN;
-                    }
-                }
-            }
-            Console.WriteLine();
-            Console.WriteLine("A CONTINUACIÓN, EL CALENDARIO CON LAS TEMPERATURAS CARGADAS ASIGNADAS A CADA DÍA DEL MES ACTUAL");
-            Console.WriteLine();
-            MostrarTemperaturas(calentemp);
-            return calentemp;
+            Legajo = legajo;
         }
-
-        // Simula la carga de temperaturas aleatorias para cada día del mes.
-        static double[,] SimularTemperaturas()
+    }
+    public class RegistroTemperatura
+    {
+            public double Temperatura { get; set; }
+            public Persona PersonaDeTurno { get; set; }
+            public DateTime FechaRegistro { get; set; }
+            public TimeSpan HoraRegistro { get; set; }
+        public RegistroTemperatura(double temperatura, Persona personaDeTurno, DateTime fechaRegistro, TimeSpan horaRegistro)
         {
-            // Inicializa el calendario para el mes actual con los días del mes, incluyendo días anteriores y posteriores.
-            double[,] calentemp = new double[5, 7];
-            DateTime hoy = DateTime.Now;
-            DateTime primerDiaMes = new DateTime(hoy.Year, hoy.Month, 1);
-            int diaSemanaPrimerDia = (int)primerDiaMes.DayOfWeek;
-            //La matriz, al tener un formato de 5x7, tendrá todas las temperaturas de cada día del mes, y un espacio vacío en los días que esten fuera del mes actual.
-            int dia = 1;
-            int diasMesActual = DateTime.DaysInMonth(hoy.Year, hoy.Month);
-            //Creo una instancia de la clase Random para las temperaturas aleatorias.
+            Temperatura = temperatura;
+            PersonaDeTurno = personaDeTurno;
+            FechaRegistro = fechaRegistro;
+            HoraRegistro = horaRegistro;
+        }
+        public override string ToString()
+        {
+            return $"TEMPERATURA: {Temperatura}°C, Registrada por el {PersonaDeTurno.Tipo} {PersonaDeTurno.Nombre} {PersonaDeTurno.Apellido}, Fecha: {FechaRegistro.ToString("dd/MM/yyyy")}, Hora: {HoraRegistro}";
+        }
+    }
+    public class EstacionMeteorologica
+    {
+        private RegistroTemperatura[,] registros;
+        private int filas = 5;
+        private int columnas = 7;
+        public EstacionMeteorologica()
+        {
+            registros = new RegistroTemperatura[5, 7];
+            CargaAutomatica();
+        }
+        private void CargaAutomatica()
+        {
+            Persona[] personas =
+            {
+                new Profesional(123,"Pedro","Gomez"),
+                new Pasante (1, "Alejandro", "Gonzalez"),
+                new Profesional (234, "Maxi", "Perez"),
+                new Pasante (2, "Lautaro", "Diaz"),
+                new Profesional (345, "Luciana", "Lopez"),
+                new Pasante (3, "Camila", "Fernandez")
+            };
+
             Random random = new Random();
-            //Recorro la matriz con dos For ya que tiene 2 dimensiones. Según el dia de la semana en el que estoy, se evalua si es parte del mes anterior, el mes actual o el mes siguiente. Si es parte del mes, se establece temperatura.
-            for (int semana = 0; semana < 5; semana++)
+
+            for (int i = 0; i < 5; i++)
             {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
+                for (int j = 0; j < 7; j++)
                 {
-                    if (semana == 0 && diaSemana < diaSemanaPrimerDia)
-                    {
-                        // Días del mes anterior
-                        calentemp[semana, diaSemana] = double.NaN;
-                    }
-                    else if (dia <= diasMesActual)
-                    {
-                        // Generar temperatura aleatoria entre -5 y 35 grados
-                        int temprandom = random.Next(-5, 35);
-                        calentemp[semana, diaSemana] = temprandom;
-                        dia++;
-                    }
-                    else
-                    {
-                        // Días del mes siguiente
-                        calentemp[semana, diaSemana] = double.NaN;
-                    }
+                    registros[i, j] = new RegistroTemperatura
+                    (
+                    random.Next(-10, 40),
+                    personas[(i + j) % 6],
+                    DateTime.Now.Date.AddDays(-j),
+                    new TimeSpan(random.Next(0, 24), 0, 0)
+                    );
                 }
             }
-            Console.WriteLine();
-            Console.WriteLine("A CONTINUACIÓN, LA SIMULACIÓN DE TEMPERATURAS RANDOM ENTRE -5 Y 35 GRADOS EN LAS TEMPERATURAS DEL MES ACTUAL");
-            Console.WriteLine();
-            MostrarTemperaturas(calentemp);
-            return calentemp;
         }
-
-        // Imprime el calendario con las temperaturas, ya sean ingresadas manualmente o simuladas aleatoriamente.
-        static void MostrarTemperaturas(double[,] calentemp)
+        public void RegistrarTemperatura(RegistroTemperatura registro, int fila, int columna)
         {
-            
+            if (fila < filas && columna < columnas)
+            {
+                registros[fila, columna] = registro;
+            }
+            else
+            {
+                Console.WriteLine("Índice fuera de rango.");
+            }
+        }
+        public void VerTemperaturas()
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    Console.WriteLine($"Semana {i + 1}, Día {j + 1}: {registros[i, j]}");
+                }
+            }
+        }
+        public Persona ObtenerPersonaPorTurno(int fila, int columna)
+        {
+            // Lógica para intercalar entre Pasante y Profesional
+            // Ejemplo simple:
+            if ((fila + columna) % 2 == 0)
+            {
+                return new Profesional(columna + 1, "Profesional", $"Pro{columna + 1}");
+
+            }
+            else
+            {
+                return new Pasante(columna + 1,"Pasante", $"P{columna + 1}");
+            }
+        }
+        public void VerTemperaturaDiaEspecifico(int semana, int dia)
+        {
+            if (semana >= 0 && semana < 5 && dia >= 0 && dia < 7)
+            {
+                var registro = registros[semana, dia];
+                Console.WriteLine($"Hora: {registro.HoraRegistro}, Temperatura: {registro.Temperatura}, Persona: {registro.PersonaDeTurno.Nombre}, Tipo: {registro.PersonaDeTurno.Tipo}");
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Día o semana fuera de rango.");
+            }
+        }
+        public List<RegistroTemperatura> ObtenerRegistros()
+        {
+            List<RegistroTemperatura> matriz = new List<RegistroTemperatura>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    matriz.Add(registros[i, j]);
+                }
+            }
+            return matriz;
+        }
+        public void MostrarCalendario()
+        {
             Console.WriteLine("------------------------------------------------------");
             // Se imprimen los días de la semana.
             string[] diasSemana = { "DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB" };
@@ -295,393 +232,102 @@ namespace ConsoleApp1
             Console.WriteLine();
             Console.WriteLine();
             // Se recorren todos los días y semanas.
-            for (int semana = 0; semana < 5; semana++)
+            for (int fila = 0; fila < 5; fila++)
             {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
+                for (int columna = 0; columna < 7; columna++)
                 {
-                    if (double.IsNaN(calentemp[semana, diaSemana]))
+                    if (registros[fila, columna] != null)
                     {
-                        // Imprime espacios para días del mes anterior o posterior
+                        Console.Write($"({registros[fila, columna].Temperatura}°)\t");
+                    }
+                    else
+                    {
                         Console.Write("\t");
                     }
-                    else
-                    {
-                        // Imprime la temperatura del día
-                        Console.Write($"({calentemp[semana, diaSemana]}°)\t");
-                    }
                 }
                 Console.WriteLine();
             }
             Console.WriteLine("------------------------------------------------------");
         }
-
-        // Evalua intervalos de temperatura y muestra la temperatura de un dia especifico.
-        static void DiaEspecifico(int[,]calendario, double[,] calentemp)
+        public RegistroTemperatura[] CargarRegistrosManualmente()
         {
-            // Si la temperatura es inferior a 0, mostrar "Hizo mucho frío."
+            RegistroTemperatura[] registros = new RegistroTemperatura[5 * 7];
+            int index = 0;
 
-            // Si la temperatura está entre 0 y 20, mostrar "El clima estaba fresco."
-
-            // Si la temperatura es superior a 20, mostrar "Hizo calor afuera."
-            Console.WriteLine("-----------------------------------------------------------");
-            Console.WriteLine("Ingrese el día del mes que desea consultar:");
-            int dia;
-            bool esValido;
-            //Se verifica que el valor ingresado sea número.
-            do
-            {
-                esValido = int.TryParse(Console.ReadLine(), out dia);
-                if (!esValido || dia < 1 || dia > 31)
-                {
-                    Console.WriteLine("Entrada inválida. Por favor, ingrese un número válido entre 1 y 31.");
-                    esValido = false;
-                }
-            } while (!esValido);
-            //Se recorre la matriz, evaluando las temperaturas del mes.
-            Console.WriteLine("-----------------------------------------------------------");
-            bool encontrado = false;
             for (int semana = 0; semana < 5; semana++)
             {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
+                for (int dia = 0; dia < 7; dia++)
                 {
-                    if (!double.IsNaN(calentemp[semana, diaSemana]) && calendario[semana, diaSemana] == dia)
+                    Console.WriteLine($"Ingrese la información para la semana {semana + 1}, día {dia + 1}:");
+                    Console.Write("Hora de registro (HH:mm): ");
+                    string horaRegistroString = Console.ReadLine();
+                    TimeSpan horaRegistro;
+                    if (TimeSpan.TryParseExact(horaRegistroString, "h\\:mm", null, System.Globalization.TimeSpanStyles.None, out horaRegistro))
                     {
-                        double temperatura = calentemp[semana, diaSemana];
-                        Console.WriteLine($"La temperatura del día {dia} es {temperatura}°C");
-                        if (temperatura < 0)
-                        {
-                            Console.WriteLine("Hizo mucho frío.");
-                        }
-                        else if (temperatura >= 0 && temperatura <= 20)
-                        {
-                            Console.WriteLine("El clima estaba fresco.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Hizo calor afuera.");
-                        }
-                        encontrado = true;
-                        break;
-                    }
-                }
-                if (encontrado) break;
-            }
-            Console.WriteLine("-----------------------------------------------------------");
-        }
-
-        // Evalua las temperaturas mayores a cierto umbral y muestra el calendario con las temperaturas que cumplen la condición.
-        static void TemperaturaUmbral(int[,] calendario, double[,] calentemp)
-        {
-            //3) Encontrar y ver temperaturas por encima de 20° (Umbral).
-            //Se crean listas para almacenar mayores, ya que no sabemos cuantos pueden ser.
-            List<double> mayoresde20 = new List<double>();
-            List<double> tempmayores = new List<double>();
-
-            Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine("A continuación, se muestran todos los días donde la temperatura fue mayor a 20°:");
-            Console.WriteLine("--------------------------------------------------------------------------------");
-            Console.WriteLine();
-            Console.WriteLine("------------------------------------------------------");
-            // Se imprimen los días de la semana.
-            string[] diasSemana = { "DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB" };
-            foreach (string diaSemana in diasSemana)
-            {
-                Console.Write(diaSemana + "\t");
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-            // Se recorren todos los días y semanas.
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (double.IsNaN(calentemp[semana, diaSemana]))
-                    {
-                        // Imprime espacios para días del mes anterior o posterior
-                        Console.Write("\t");
+                        // horaRegistro ahora contiene la hora de registro como un objeto TimeSpan
                     }
                     else
                     {
-                        // Imprime la temperatura del día solamente si es mayor a 20°.
-                        if (calentemp[semana, diaSemana] > 20)
+                        Console.WriteLine("Formato de hora incorrecto. Debe ser HH:mm");
+                    }
+                    Console.Write("Temperatura: ");
+                    double temperatura;
+                    bool esValido;
+                    do
+                    {
+                        esValido = double.TryParse(Console.ReadLine(), out temperatura);
+                        if (!esValido)
                         {
-                            Console.Write($"({calentemp[semana, diaSemana]}°)\t");
-                            tempmayores.Add(calentemp[semana, diaSemana]);
-                            mayoresde20.Add(calendario[semana, diaSemana]);
+                            Console.WriteLine("Entrada inválida. Por favor, ingrese un número válido.");
                         }
-                        else
-                        {
-                            Console.Write("\t");
-                        }
-                    }
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine("------------------------------------------------------");
-            Console.WriteLine($"Los días con temperaturas mayores a 20 fueron:");
-            Console.WriteLine();
-            for (int i = 0; i < mayoresde20.Count; i++) 
-            {
-                Console.WriteLine($"El día número {mayoresde20[i]}, con un total de {tempmayores[i]}° grados.");
-            }
-            Console.WriteLine();
-        }
+                    } while (!esValido);
 
-        // Calcula y muestra el promedio de temperatura de cada semana.
-        static void PromedioSemanal(double[,] calentemp)
-        {
-            //Calcular y ver temperaturas promedios de cada semana.
-            MostrarTemperaturas(calentemp);
-            Console.WriteLine("------------------------------------------------------");
-            Console.WriteLine("A continuación, se mostrarán las temperaturas promedio de cada semana del mes.");
-            Console.WriteLine();
-            int contador = 0;
-            double tempsemanal = 0;
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (!double.IsNaN(calentemp[semana, diaSemana]))
+                    Console.Write("Persona de turno (Legajo/Matricula, Nombre, Apellido, Tipo): ");
+                    string[] personaInfo = Console.ReadLine().Split(',');
+                    int legajoMatricula = int.Parse(personaInfo[0].Trim());
+                    string nombre = personaInfo[1].Trim();
+                    string apellido = personaInfo[2].Trim();
+                    string tipo = personaInfo[3].Trim();
+
+                    Persona personaDeTurno;
+                    if (tipo == "Profesional")
                     {
-                        double temperatura = calentemp[semana, diaSemana];
-                        tempsemanal += temperatura;
-                        contador++;
+                        personaDeTurno = new Profesional(legajoMatricula, nombre, apellido);
                     }
-                }
-                Console.WriteLine($"La temperatura promedio de la semana numero {semana+1} es: {(tempsemanal/contador):N1}°");
-            }
-
-        }
-
-        // Calcula y muestra el promedio de temperatura del mes actual.
-        static void PromedioMes(double[,] calentemp)
-        {
-            Console.WriteLine("PARA MAYOR INFORMACIÓN Y VERIFICACIÓN, SE UTILIZARÁ LA FUNCIONALIDAD DE MOSTRAR PROMEDIO SEMANAL ANTES DE MOSTRAR EL PROMEDIO MENSUAL.");
-            Console.WriteLine("------------------------------------------------------");
-            PromedioSemanal(calentemp);
-            double promediomes = 0;
-            double promediosemanal = 0;
-            Console.WriteLine("------------------------------------------------------");
-            int contador = 0;
-            double tempsemanal = 0;
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (!double.IsNaN(calentemp[semana, diaSemana]))
+                    else if (tipo == "Pasante")
                     {
-                        double temperatura = calentemp[semana, diaSemana];
-                        tempsemanal += temperatura;
-                        contador++;
-                    }
-                }
-                promediosemanal = tempsemanal / contador;
-                promediomes += promediosemanal;
-            }
-            Console.WriteLine($"EL PROMEDIO MENSUAL DE TEMPERATURAS ES DE: {(promediomes/5):N1}° GRADOS.");
-        }
-
-        // Calcula y muestra el la temperatura mas alta del mes actual.
-        static void TempMasAlta(int[,] calendario, double[,] calentemp)
-        {
-            double tempmayor = -99;
-            int diamayor = 0;
-            Console.WriteLine("---------------------------------------------------------------------------------------");
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (!double.IsNaN(calentemp[semana, diaSemana]))
-                    {
-                        double temperatura = calentemp[semana, diaSemana];
-                        if (tempmayor < temperatura)
-                        {
-                            tempmayor = temperatura;
-                            diamayor = calendario[semana, diaSemana];
-                        }
-                    }
-                }
-            }
-            Console.WriteLine($"LA TEMPERATURA MAS ALTA DEL MES ES DE  {tempmayor:N1}° GRADOS EN EL DIA NÚMERO {diamayor} DEL MES ACTUAL.");
-            Console.WriteLine("---------------------------------------------------------------------------------------");
-
-        }
-
-        // Calcula y muestra el la temperatura mas baja del mes actual.
-        static void TempMasBaja(int[,] calendario, double[,] calentemp)
-        {
-            double tempmenor = 99;
-            int diamenor = 0;
-            Console.WriteLine("---------------------------------------------------------------------------------------");
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (!double.IsNaN(calentemp[semana, diaSemana]))
-                    {
-                        double temperatura = calentemp[semana, diaSemana];
-                        if (tempmenor > temperatura)
-                        {
-                            tempmenor = temperatura;
-                            diamenor = calendario[semana, diaSemana];
-                        }
-                    }
-                }
-            }
-            Console.WriteLine($"LA TEMPERATURA MAS BAJA DEL MES ES DE  {tempmenor:N1}° GRADOS EN EL DIA NÚMERO {diamenor} DEL MES ACTUAL.");
-            Console.WriteLine("---------------------------------------------------------------------------------------");
-
-        }
-
-        //Ver el pronóstico de 5 días posteriores al mes. 
-        static void MostrarDiasPosteriores(int[,] calen, double[,] calentemp)
-        {
-            // Obtener el primer día del mes siguiente
-            DateTime hoy = DateTime.Now;
-            DateTime primerDiaMesSiguiente = new DateTime(hoy.Year, hoy.Month, 1).AddMonths(1);
-            int diasMesSiguiente = DateTime.DaysInMonth(primerDiaMesSiguiente.Year, primerDiaMesSiguiente.Month);
-            Console.WriteLine();
-            Console.WriteLine("MATRIZ CON LAS TEMPERATURAS DE LOS PRIMEROS 5 DÍAS  DEL MES SIGUIENTE. LOS DEMÁS DÍAS CON SUS RESPECTIVOS NÚMEROS.");
-            Console.WriteLine();
-            Console.WriteLine("---------------------------------------------------");
-            string[] diasSemana = { "DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB" };
-            foreach (string diaSemana in diasSemana)
-            {
-                Console.Write(diaSemana + "\t");
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-            int[,] calenMesSiguiente = new int[5, 7];
-            double[,] calentempMesSiguiente = new double[5, 7];
-            // Simular los primeros 5 días del mes siguiente
-            Random random = new Random();
-            for (int dia = 1; dia <= diasMesSiguiente; dia++)
-            {
-                int semana = (dia + (int)primerDiaMesSiguiente.DayOfWeek - 1) / 7;
-                int diaSemana = (dia + (int)primerDiaMesSiguiente.DayOfWeek - 1) % 7;
-                calenMesSiguiente[semana, diaSemana] = dia;
-                if (dia <= 5)
-                {
-                    calentempMesSiguiente[semana, diaSemana] = random.Next(-5, 35);
-                }
-                else
-                {
-                    calentempMesSiguiente[semana, diaSemana] = double.NaN; // No se asigna temperatura a los días posteriores
-                }
-            }
-            for (int semana = 0; semana < 5; semana++)
-            {
-                for (int diaSemana = 0; diaSemana < 7; diaSemana++)
-                {
-                    if (double.IsNaN(calentempMesSiguiente[semana, diaSemana]))
-                    {
-                        // Para los días sin temperaturas del mes que viene, decidí mostrar el numero del día correspondiente
-                        Console.Write($"{calenMesSiguiente[semana, diaSemana]}\t");
-                    }
-                    else if (calenMesSiguiente[semana, diaSemana] != 0)
-                    {
-                        Console.Write($"({calentempMesSiguiente[semana, diaSemana]:0.#}°)\t");
+                        personaDeTurno = new Pasante(legajoMatricula, nombre, apellido);
                     }
                     else
                     {
-                        //Los dias que no son del mes que viene, se establecen como NaN(Significa Not a Number)
-                        Console.Write($"{double.NaN}\t");
+                        throw new ArgumentException("Tipo de persona no válido");
                     }
+
+                    DateTime fechaRegistro = DateTime.Now; // Asigna la fecha actual
+                    RegistroTemperatura registro = new RegistroTemperatura(temperatura, personaDeTurno, fechaRegistro, horaRegistro);
+                    registros[index] = registro;
+                    index++;
                 }
-                Console.WriteLine();
             }
-            Console.WriteLine("---------------------------------------------------");
+
+            return registros;
         }
-        static void Salir()
+    }
+    public static class CalculoTemperaturas
+    {
+        public static double CalcularPromedio(List<RegistroTemperatura> temperaturas)
         {
-            Console.WriteLine("---------------------------------------");
-            Console.WriteLine("Usted ha seleccionado la opción Salir.");
-            Console.WriteLine("---------------------------------------");
-            Console.WriteLine();
-            Console.WriteLine("¡MUCHAS GRACIAS POR UTILIZAR NUESTRA APLICACIÓN DE PRONÓSTICO! ¡HASTA LUEGO!");
-            Console.WriteLine();
+            return temperaturas.Average(t => t.Temperatura);
         }
 
-        // Menu Opciones iteradas hasta salir.
-        static void Opciones(int[,]calendario, double[,]calentemp)
+        public static double CalcularMaxima(List<RegistroTemperatura> temperaturas)
         {
-            int opcion = 0;
-            DateTime hoy = DateTime.Now;
-            do
-            {
-                Console.WriteLine("-----------------------------------------------------------");
-                Console.WriteLine("MENÚ DE OPCIONES");
-                Console.WriteLine("1) Ver temperatura de algún día específico");
-                Console.WriteLine("2) Calcular y ver temperaturas promedios de cada semana.");
-                Console.WriteLine("3) Encontrar y ver temperaturas por encima de 20° (Umbral).");
-                Console.WriteLine("4) Ver la temperatura promedio del mes.");
-                Console.WriteLine("5) Ver la temperatura más alta.");
-                Console.WriteLine("6) Ver la temperatura más baja.");
-                Console.WriteLine("7) Ver el pronóstico de 5 días posteriores al mes.");
-                Console.WriteLine("8) Salir.");
-                Console.WriteLine("-----------------------------------------------------------");
-                Console.WriteLine("Porfavor, seleccionar alguna opción del menú:");
-                if (int.TryParse(Console.ReadLine(), out opcion))
-                {
-                    switch (opcion)
-                    {
-                        case 1:
-                            DiaEspecifico(calendario, calentemp);
-                            break;
-                        case 2:
-                            PromedioSemanal(calentemp);
-                            break;
-                        case 3:
-                            TemperaturaUmbral(calendario, calentemp);
-                            break;
-                        case 4:
-                            PromedioMes(calentemp);
-                            break;
-                        case 5:
-                            TempMasAlta(calendario, calentemp);
-                            break;
-                        case 6:
-                            TempMasBaja(calendario, calentemp);
-                            break;
-                        case 7:
-                            MostrarDiasPosteriores(calendario, calentemp);
-                            break;
-                        case 8:
-                            Salir();
-                            break;
-                        default:
-                        Console.WriteLine($"El número ingresado {opcion} es incorrecto. Inserte un valor numérico del 1 al 7.");
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Valor incorrecto. Se volverá a mostrar el menú. Inserte un valor numérico.");
-                }
-            }
-            while (opcion < 1 || opcion >8);
-            while (opcion != 8)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Desea elegir alguna otra opción? (si/no)");
-                Console.WriteLine();
-                string respuesta;
-                respuesta = Console.ReadLine().ToLower();
-                while (respuesta != "sí" && respuesta != "si" && respuesta != "no")
-                {
-                    Console.WriteLine("Respuesta incorrecta. Por favor, ingrese una respuesta correcta (sí/no)");
-                    respuesta = Console.ReadLine().ToLower();
-                }
-                if (respuesta == "no")
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("¡MUCHAS GRACIAS POR UTILIZAR NUESTRA APLICACIÓN DE PRONÓSTICO! ¡HASTA LUEGO!");
-                    Console.WriteLine();
-                    break;
-                }
-                else
-                { Opciones(calendario, calentemp); }
-            }
+            return temperaturas.Max(t => t.Temperatura);
+        }
+
+        public static double CalcularMinima(List<RegistroTemperatura> temperaturas)
+        {
+            return temperaturas.Min(t => t.Temperatura);
         }
     }
 }
